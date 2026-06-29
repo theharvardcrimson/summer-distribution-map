@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Crimson Summer Edition Distribution Locations</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root{
+    --crimson:#A51C30;
+    --crimson-dark:#7A1422;
+    --ink:#1c1c1c;
+    --paper:#faf8f5;
+    --line:#e6e0d8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:Georgia,"Times New Roman",serif;
+    color:var(--ink);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    position:relative;
+    overflow:hidden;
+    background:var(--crimson);
+    color:#fff;
+    padding:38px 28px 32px;
+    text-align:center;
+    border-bottom:5px solid var(--crimson-dark);
+  }
+  header .hero{
+    position:relative;
+    z-index:1;
+  }
+  header .kicker{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    text-transform:uppercase;
+    letter-spacing:3px;
+    font-size:12px;
+    font-weight:700;
+    opacity:.85;
+    margin-bottom:10px;
+  }
+  header h1{
+    font-size:32px;
+    font-weight:700;
+    line-height:1.15;
+    letter-spacing:-.3px;
+  }
+  header p.sub{
+    margin-top:10px;
+    font-style:italic;
+    font-size:15px;
+    opacity:.9;
+  }
+  .layout{
+    display:flex;
+    height:calc(100vh - 200px);
+    min-height:480px;
+  }
+  #map{
+    flex:1 1 auto;
+    height:100%;
+    z-index:1;
+  }
+  aside{
+    width:340px;
+    flex:0 0 340px;
+    overflow-y:auto;
+    background:#fff;
+    border-left:1px solid var(--line);
+  }
+  aside h2{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    color:var(--crimson);
+    padding:18px 20px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .loc{
+    padding:13px 20px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    transition:background .12s ease;
+  }
+  .loc:hover{background:#fbf2f3;}
+  .loc .name{
+    font-weight:700;
+    font-size:15px;
+    margin-bottom:3px;
+  }
+  .loc .addr{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:12.5px;
+    color:#666;
+  }
+  footer{
+    background:var(--ink);
+    color:#fff;
+    text-align:center;
+    padding:20px 16px;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:14px;
+  }
+  footer a{color:#fff;font-weight:700;text-decoration:underline;}
+  .leaflet-popup-content{
+    font-family:Georgia,serif;
+  }
+  .leaflet-popup-content .pname{font-weight:700;display:block;margin-bottom:2px;}
+  .leaflet-popup-content .paddr{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:#555;}
+  @media (max-width:720px){
+    .layout{flex-direction:column;height:auto;}
+    #map{height:55vh;}
+    aside{width:100%;flex:none;max-height:40vh;}
+    header h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div class="kicker">The Harvard Crimson</div>
+      <h1>Summer Edition Distribution Locations</h1>
+      <p class="sub">Find a copy near you across Cambridge &amp; Boston</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div id="map"></div>
+    <aside>
+      <h2>All Locations</h2>
+      <div id="list"></div>
+    </aside>
+  </div>
+
+  <footer>
+    Any questions? Reach <a href="mailto:managingeditor@thecrimson.com">managingeditor@thecrimson.com</a>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const locations = [
+      {name:"The Harvard Crimson", addr:"14 Plympton St, Cambridge, MA 02138", lat:42.37193, lng:-71.11747},
+      {name:"Harvard Book Store", addr:"1256 Massachusetts Ave, Cambridge, MA 02138", lat:42.37254, lng:-71.11829},
+      {name:"Mr. Bartley's Burger Cottage", addr:"1246 Massachusetts Ave, Cambridge, MA 02138", lat:42.37224, lng:-71.11802},
+      {name:"Hong Kong Restaurant", addr:"1238 Massachusetts Ave, Cambridge, MA 02138", lat:42.37210, lng:-71.11793},
+      {name:"Lamont Library", addr:"11 Quincy St, Cambridge, MA 02138", lat:42.37300, lng:-71.11563},
+      {name:"Smith Campus Center", addr:"1350 Massachusetts Ave, Cambridge, MA 02138", lat:42.37333, lng:-71.11889},
+      {name:"Harvard Square T Station", addr:"1400 Massachusetts Ave, 1 Brattle St at, Cambridge, MA 02138", lat:42.37339, lng:-71.11903},
+      {name:"Cambridge KiOSK", addr:"0 Harvard Square, Cambridge, MA 02138", lat:42.37320, lng:-71.11947},
+      {name:"Harvard COOP", addr:"1400 Massachusetts Ave, Cambridge, MA 02138", lat:42.37288, lng:-71.11858},
+      {name:"Charles Hotel", addr:"1 Bennett St, Cambridge, MA 02138", lat:42.37220, lng:-71.12200},
+      {name:"Winthrop House", addr:"32 Mill St, Cambridge, MA 02138", lat:42.37040, lng:-71.11960},
+      {name:"Adams House", addr:"Russell Hall, 26 Plympton St, Cambridge, MA 02138", lat:42.37150, lng:-71.11783},
+      {name:"Mather House", addr:"10 Cowperthwaite St, Cambridge, MA 02138", lat:42.36860, lng:-71.11750},
+      {name:"Science Center", addr:"1 Oxford St, Cambridge, MA 02138", lat:42.37640, lng:-71.11670},
+      {name:"Lovestruck Books", addr:"44 Brattle St, Cambridge, MA 02138", lat:42.37400, lng:-71.12150},
+      {name:"Cambridge Artists Collective", addr:"59a Church St, Cambridge, MA 02138", lat:42.37380, lng:-71.12050},
+      {name:"Harvard Club of Boston", addr:"374 Commonwealth Ave, Boston, MA 02115", lat:42.34890, lng:-71.08750},
+      {name:"Grafton Street Pub & Grill", addr:"59 John F. Kennedy St, Cambridge, MA 02138", lat:42.37250, lng:-71.12050},
+      {name:"Simon's Coffee Shop", addr:"1736 Massachusetts Ave, Cambridge, MA 02138", lat:42.38800, lng:-71.11920},
+      {name:"Mother Juice", addr:"1350 Massachusetts Ave, Cambridge, MA 02138", lat:42.37331, lng:-71.11887},
+      {name:"First Cambridge Capital", addr:"6 Bennett St, Cambridge, MA 02138", lat:42.37250, lng:-71.12220},
+      {name:"1369 Coffee House (Central)", addr:"757 Massachusetts Ave, Cambridge, MA 02139", lat:42.36540, lng:-71.10370},
+      {name:"1369 Coffee House (Inman)", addr:"1369 Cambridge St, Cambridge, MA 02139", lat:42.37360, lng:-71.10100},
+      {name:"Cambridge Public Library", addr:"449 Broadway, Cambridge, MA 02138", lat:42.37360, lng:-71.11060},
+      {name:"SEC Library", addr:"150 Western Ave, Boston, MA 02134", lat:42.36310, lng:-71.12550}
+    ];
+
+    const map = L.map('map', {scrollWheelZoom:true});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom:19,
+      attribution:'&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Crimson-colored pin
+    const crimsonIcon = L.divIcon({
+      className:'',
+      html:'<svg width="26" height="38" viewBox="0 0 26 38" xmlns="http://www.w3.org/2000/svg">'+
+           '<path d="M13 0C5.8 0 0 5.8 0 13c0 9.2 13 25 13 25s13-15.8 13-25C26 5.8 20.2 0 13 0z" fill="#A51C30" stroke="#7A1422" stroke-width="1.5"/>'+
+           '<circle cx="13" cy="13" r="5" fill="#fff"/></svg>',
+      iconSize:[26,38],
+      iconAnchor:[13,38],
+      popupAnchor:[0,-34]
+    });
+
+    const markers = [];
+    const bounds = [];
+    locations.forEach((loc, i) => {
+      const m = L.marker([loc.lat, loc.lng], {icon:crimsonIcon}).addTo(map);
+      m.bindPopup('<span class="pname">'+loc.name+'</span><span class="paddr">'+loc.addr+'</span>');
+      markers.push(m);
+      bounds.push([loc.lat, loc.lng]);
+    });
+    map.fitBounds(bounds, {padding:[40,40]});
+
+    // Sidebar list
+    const list = document.getElementById('list');
+    locations.forEach((loc, i) => {
+      const div = document.createElement('div');
+      div.className = 'loc';
+      div.innerHTML = '<div class="name">'+loc.name+'</div><div class="addr">'+loc.addr+'</div>';
+      div.addEventListener('click', () => {
+        map.setView([loc.lat, loc.lng], 17, {animate:true});
+        markers[i].openPopup();
+      });
+      list.appendChild(div);
+    });
+  </script>
+</body>
+</html>
