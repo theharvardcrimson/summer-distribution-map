@@ -20,7 +20,12 @@
     color:var(--ink);
     background:var(--paper);
     -webkit-font-smoothing:antialiased;
+    height:100vh;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
   }
+  header,footer{flex:0 0 auto;}
   header{
     position:relative;
     overflow:hidden;
@@ -57,8 +62,8 @@
   }
   .layout{
     display:flex;
-    height:calc(100vh - 200px);
-    min-height:480px;
+    flex:1 1 auto;
+    min-height:0;
   }
   #map{
     flex:1 1 auto;
@@ -113,10 +118,11 @@
   .leaflet-popup-content .pname{font-weight:700;display:block;margin-bottom:2px;}
   .leaflet-popup-content .paddr{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:#555;}
   @media (max-width:720px){
-    .layout{flex-direction:column;height:auto;}
-    #map{height:55vh;}
-    aside{width:100%;flex:none;max-height:40vh;}
+    .layout{flex-direction:column;}
+    #map{flex:1 1 auto;height:auto;}
+    aside{width:100%;flex:0 0 38vh;}
     header h1{font-size:24px;}
+    header{padding:24px 18px 20px;}
   }
 </style>
 </head>
@@ -144,7 +150,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const locations = [
-      {name:"The Harvard Crimson", addr:"14 Plympton St, Cambridge, MA 02138", lat:42.37193, lng:-71.11747},
+      {name:"The Harvard Crimson", addr:"14 Plympton St, Cambridge, MA 02138", lat:42.37212, lng:-71.11647},
       {name:"Harvard Book Store", addr:"1256 Massachusetts Ave, Cambridge, MA 02138", lat:42.37254, lng:-71.11636},
       {name:"Mr. Bartley's Burger Cottage", addr:"1246 Massachusetts Ave, Cambridge, MA 02138", lat:42.37246, lng:-71.11621},
       {name:"Hong Kong Restaurant", addr:"1238 Massachusetts Ave, Cambridge, MA 02138", lat:42.37236, lng:-71.11602},
@@ -155,7 +161,7 @@
       {name:"Harvard COOP", addr:"1400 Massachusetts Ave, Cambridge, MA 02138", lat:42.37288, lng:-71.11858},
       {name:"Charles Hotel", addr:"1 Bennett St, Cambridge, MA 02138", lat:42.37220, lng:-71.12200},
       {name:"Winthrop House", addr:"32 Mill St, Cambridge, MA 02138", lat:42.37040, lng:-71.11960},
-      {name:"Adams House", addr:"Russell Hall, 26 Plympton St, Cambridge, MA 02138", lat:42.37150, lng:-71.11783},
+      {name:"Adams House", addr:"Claverly Hall, 65 Mount Auburn St, Cambridge, MA 02138", lat:42.37215, lng:-71.11764},
       {name:"Mather House", addr:"10 Cowperthwaite St, Cambridge, MA 02138", lat:42.36860, lng:-71.11750},
       {name:"Science Center", addr:"1 Oxford St, Cambridge, MA 02138", lat:42.37640, lng:-71.11670},
       {name:"Lovestruck Books", addr:"44 Brattle St, Cambridge, MA 02138", lat:42.37400, lng:-71.12150},
